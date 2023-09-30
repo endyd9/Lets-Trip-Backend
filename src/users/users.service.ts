@@ -1,26 +1,90 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { EditUserInput } from './dto/edit-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(
+    @InjectRepository(User) private readonly users: Repository<User>,
+  ) {}
+
+  async findAll() {
+    try {
+      const users = await this.users.find();
+      return {
+        ok: true,
+        users,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findOne(uid: number) {
+    try {
+      const user = await this.users.findOne({
+        where: {
+          uid,
+        },
+      });
+      if (!user) {
+        throw new HttpException('유저없음', HttpStatus.NOT_FOUND);
+      }
+      return {
+        ok: true,
+        user,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async update(uid: number, { password, nickName, avatarUrl }: EditUserInput) {
+    try {
+      const user = await this.users.findOne({ where: { uid } });
+      if (!user) {
+        throw new HttpException('유저없음', HttpStatus.NOT_FOUND);
+      }
+      user.password = password;
+      user.nickName = nickName;
+      user.avatarUrl = avatarUrl;
+
+      await this.users.save(user);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async remove(uid: number) {
+    try {
+      const user = await this.users.findOne({ where: { uid } });
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+      if (!user) {
+        throw new HttpException('유저 없음', HttpStatus.BAD_REQUEST);
+      }
+      await this.users.remove(user);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
   }
 }

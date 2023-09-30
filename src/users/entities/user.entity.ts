@@ -1,5 +1,13 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import { IsString } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BeforeInsert,
+  BeforeUpdate,
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Entity()
 export class User {
@@ -12,6 +20,7 @@ export class User {
   email: string;
 
   @IsString()
+  @Column()
   password: string;
 
   @IsString()
@@ -21,4 +30,25 @@ export class User {
   @IsString()
   @Column({ default: null, nullable: true })
   avatarUrl?: string;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword(): Promise<void> {
+    if (this.password) {
+      try {
+        this.password = await bcrypt.hash(this.password, 10);
+      } catch (error) {
+        console.log(error);
+        throw new InternalServerErrorException();
+      }
+    }
+  }
+  async checkPassword(aPsassword: string): Promise<boolean> {
+    try {
+      return await bcrypt.compare(aPsassword, this.password);
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
 }
