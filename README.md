@@ -12,7 +12,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - GET`/` => Get Mainpage Date
 - GET`/popular` => Get Top10 Liked Posts
 - POST`/join` => Create New User✅
-- POST`/login` => User Login
+- POST`/login` => User Login✅
 
 ### /users
 

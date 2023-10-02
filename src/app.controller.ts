@@ -1,11 +1,24 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AppService } from './app.service';
 import { CreateUserInput, CreateUserOutput } from './users/dto/create-user.dto';
 import { LoginInput, LoginOutput } from './users/dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
+import { AuthGuard } from './auth/auth.guard';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private jwtService: JwtService,
+  ) {}
   @Get()
   getHello(): string {
     return this.appService.getHello();

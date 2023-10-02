@@ -4,11 +4,13 @@ import { User } from './users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserInput, CreateUserOutput } from './users/dto/create-user.dto';
 import { LoginInput, LoginOutput } from './users/dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AppService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
+    private jwtService: JwtService,
   ) {}
 
   getHello(): string {
@@ -53,17 +55,21 @@ export class AppService {
     try {
       const user = await this.users.findOne({ where: { email: email } });
       if (!user) {
-        throw new HttpException('없는유저', HttpStatus.NOT_FOUND);
+        throw new HttpException('가입안된이메일', HttpStatus.NOT_FOUND);
       }
       const passwordCheck = await user.checkPassword(password);
       if (!passwordCheck) {
         throw new HttpException('비번틀림', HttpStatus.NOT_FOUND);
       }
+
+      const payload = { id: user.uid, username: user.email };
+      const token = await this.jwtService.signAsync(payload);
       return {
         ok: true,
-        token: '나중에는 토큰 줄거임',
+        token,
       };
     } catch (error) {
+      console.log(error);
       return {
         ok: false,
         error,
