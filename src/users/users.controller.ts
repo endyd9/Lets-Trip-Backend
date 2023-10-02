@@ -11,21 +11,21 @@ export class UsersController {
     return this.usersService.findAll();
   }
 
-  @Get(':uid')
-  findOne(@Param('uid') uid: string) {
-    return this.usersService.findOne(+uid);
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(+id);
   }
 
-  @Patch(':uid')
+  @Patch(':id')
   update(
-    @Param('uid') uid: string,
+    @Param('id') id: string,
     @Body() EditUserDto: EditUserInput,
   ): Promise<EditUserOutput> {
-    return this.usersService.update(+uid, EditUserDto);
+    return this.usersService.update(+id, EditUserDto);
   }
 
-  @Delete(':uid')
-  remove(@Param('uid') uid: string) {
-    return this.usersService.remove(+uid);
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(+id);
   }
 }

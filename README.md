@@ -10,7 +10,6 @@ NestJS, TypeORM, PostgreSQL, REST API
 ### /
 
 - GET`/` => Get Mainpage Date
-- GET`/popular` => Get Top10 Liked Posts
 - POST`/join` => Create New User✅
 - POST`/login` => User Login✅
 
@@ -23,8 +22,57 @@ NestJS, TypeORM, PostgreSQL, REST API
 
 ### /posts
 
-- GET`/?limit={Post Limit}&{Sort Options}` => Get Posts
-- POST`/` => Create New Post
-- GET`/:id` => Get Post
+- GET`/popular` => Get Top10 Liked Posts✅
+- GET`/?limit={Post Limit}&{Sort Options}` => Get Posts✅
+- POST`/` => Create New Post✅
+- GET`/:id` => Get Post✅
 - PATCH`/:id` => Edit Post
 - DELETE`/:id` => Delete Post
+
+## 테이블 명세
+
+### User
+
+- id : number
+- createdAt : Date
+- updatedAt : Date
+- email : stirng
+- password : string
+- nickname : string
+- avatarUrl : string
+- posts : Post[]
+- comments : Comment[]
+- likedPost : Post[]
+
+### Post
+
+- id : number
+- createdAt : Date
+- updatedAt : Date
+- title : string
+- content : string
+- imgUrl? : string
+- writer? : User
+- comments : Comment[]
+- like: number
+- nomem? : string
+- password? : string
+
+### Comment
+
+- id: number
+- createdAt : Date
+- updatedAt : Date
+- content : string
+- writer? : User
+- like: number
+- nomem? : string
+- password? : string
+
+### Board
+
+- id: number
+- createdAt : Date
+- updatedAt : Date
+- name : stirng
+- manager : User

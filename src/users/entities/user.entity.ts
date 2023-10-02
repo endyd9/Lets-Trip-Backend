@@ -1,20 +1,12 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { IsString } from 'class-validator';
-import {
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  Entity,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { IsOptional, IsString } from 'class-validator';
+import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { CoreEntity } from 'src/common/entities/core.entity';
+import { Post } from 'src/posts/entities/post.entity';
 
 @Entity()
-export class User {
-  @Column({ unique: true })
-  @PrimaryGeneratedColumn()
-  uid: number;
-
+export class User extends CoreEntity {
   @IsString()
   @Column({ unique: true })
   email: string;
@@ -24,12 +16,17 @@ export class User {
   password: string;
 
   @IsString()
+  @IsOptional()
   @Column({ default: `아무개` })
   nickName: string;
 
   @IsString()
+  @IsOptional()
   @Column({ default: null, nullable: true })
-  avatarUrl?: string;
+  avatarUrl: string;
+
+  @OneToMany((type) => Post, (Post) => Post.writer)
+  posts: Post[];
 
   @BeforeInsert()
   @BeforeUpdate()

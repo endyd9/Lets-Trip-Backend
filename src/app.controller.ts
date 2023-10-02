@@ -20,8 +20,8 @@ export class AppController {
     private jwtService: JwtService,
   ) {}
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  home(): string {
+    return this.appService.getHomeData();
   }
 
   @Post('join')

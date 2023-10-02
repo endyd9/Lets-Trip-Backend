@@ -13,8 +13,8 @@ export class AppService {
     private jwtService: JwtService,
   ) {}
 
-  getHello(): string {
-    return 'Hello World!';
+  getHomeData(): string {
+    return '메인화면 데이타 뿌려줄거임';
   }
 
   async join({
@@ -32,7 +32,7 @@ export class AppService {
       if (exists) {
         throw new HttpException('이메일 중복', HttpStatus.BAD_REQUEST);
       }
-      const user = await this.users.save(
+      await this.users.save(
         this.users.create({
           email,
           password,
@@ -62,7 +62,7 @@ export class AppService {
         throw new HttpException('비번틀림', HttpStatus.NOT_FOUND);
       }
 
-      const payload = { id: user.uid, username: user.email };
+      const payload = { id: user.id, username: user.email };
       const token = await this.jwtService.signAsync(payload);
       return {
         ok: true,

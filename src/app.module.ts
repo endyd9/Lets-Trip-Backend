@@ -4,9 +4,11 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { PostsModule } from './posts/posts.module';
+import { Post } from './posts/entities/post.entity';
 
 @Module({
   imports: [
@@ -22,8 +24,8 @@ import { AuthModule } from './auth/auth.module';
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
       synchronize: true,
-      logging: true,
-      entities: [User],
+      logging: process.env.NODE_ENV === 'dev',
+      entities: [User, Post],
     }),
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
@@ -33,6 +35,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     UsersModule,
     AuthModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

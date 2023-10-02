@@ -1,6 +1,6 @@
 import { PickType } from '@nestjs/mapped-types';
 import { User } from '../entities/user.entity';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { CoreOutput } from 'src/common/dto/core.dto';
 
 export class EditUserInput extends PickType(User, [
@@ -9,12 +9,15 @@ export class EditUserInput extends PickType(User, [
   'avatarUrl',
 ]) {
   @IsString()
+  @IsOptional()
   readonly password: string;
 
   @IsString()
+  @IsOptional()
   readonly nickName: string;
 
   @IsString()
+  @IsOptional()
   readonly avatarUrl: string;
 }
 

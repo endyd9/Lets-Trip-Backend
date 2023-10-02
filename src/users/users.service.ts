@@ -25,11 +25,11 @@ export class UsersService {
     }
   }
 
-  async findOne(uid: number) {
+  async findOne(id: number) {
     try {
       const user = await this.users.findOne({
         where: {
-          uid,
+          id,
         },
       });
       if (!user) {
@@ -47,9 +47,9 @@ export class UsersService {
     }
   }
 
-  async update(uid: number, { password, nickName, avatarUrl }: EditUserInput) {
+  async update(id: number, { password, nickName, avatarUrl }: EditUserInput) {
     try {
-      const user = await this.users.findOne({ where: { uid } });
+      const user = await this.users.findOne({ where: { id } });
       if (!user) {
         throw new HttpException('유저없음', HttpStatus.NOT_FOUND);
       }
@@ -69,9 +69,9 @@ export class UsersService {
     }
   }
 
-  async remove(uid: number) {
+  async remove(id: number) {
     try {
-      const user = await this.users.findOne({ where: { uid } });
+      const user = await this.users.findOne({ where: { id } });
 
       if (!user) {
         throw new HttpException('유저 없음', HttpStatus.BAD_REQUEST);
