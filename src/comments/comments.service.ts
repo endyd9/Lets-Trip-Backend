@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { GetCommentsInput, GetCommentsOutput } from './dto/get-comments.dto';
 import { WriteCommentInput, WriteCommentOutput } from './dto/write-comment.dto';
 import { Post } from 'src/posts/entities/post.entity';
+import { EditCommentInput, EditCommentOutput } from './dto/edit-comment.dto';
 
 @Injectable()
 export class CommentsService {
@@ -87,6 +88,46 @@ export class CommentsService {
       } else {
         throw new HttpException('작성자 오류', HttpStatus.BAD_REQUEST);
       }
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async editComment(
+    commentId: string,
+    { writer, nomem, password, content }: EditCommentInput,
+  ): Promise<EditCommentOutput> {
+    try {
+      if (
+        (writer === undefined && nomem === undefined) ||
+        password === undefined
+      ) {
+        throw new HttpException('권한 없음', HttpStatus.UNAUTHORIZED);
+      }
+
+      const comment = await this.comment.findOne({ where: { id: +commentId } });
+      if (!comment) {
+        throw new HttpException('댓글 없음', HttpStatus.NOT_FOUND);
+      }
+
+      if (writer !== undefined) {
+        if (comment.writer !== writer) {
+          throw new HttpException('권한 없음', HttpStatus.UNAUTHORIZED);
+        }
+        comment.content = content;
+      } else if (nomem !== undefined) {
+        if (comment.password !== password) {
+          throw new HttpException('권한 없음', HttpStatus.UNAUTHORIZED);
+        }
+        comment.content = content;
+      }
+      await this.comment.save(comment);
+      return {
+        ok: true,
+      };
     } catch (error) {
       return {
         ok: false,

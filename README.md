@@ -2,10 +2,9 @@
 
 ## ToDo
 
-1.posts 마무리✅  
-2.comment 엔티티✅  
-3.comment 마무리
-4.board 엔티티 만들고 user, post 엔티티 수정
+!!!! 유저인증 리팩토링
+1.comment 마무리  
+2.board 엔티티 만들고 user, post 엔티티 수정
 
 ## 프로젝트 개요
 
@@ -39,8 +38,8 @@ NestJS, TypeORM, PostgreSQL, REST API
 
 ### /comments
 
-- GET`/:postId?page={number}` => Get Current Post Comeents
-- POST`/:postId` => Write Comment
+- GET`/:postId?page={number}` => Get Current Post Comeents✅
+- POST`/:postId` => Write Comment✅
 - PATCH`/:commentId` => Edit Comment
 - DELETE`/:commentId` => Delete Comment
 
