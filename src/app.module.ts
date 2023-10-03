@@ -9,6 +9,8 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { PostsModule } from './posts/posts.module';
 import { Post } from './posts/entities/post.entity';
+import { CommentsModule } from './comments/comments.module';
+import { Comment } from './comments/entities/comment.entity';
 
 @Module({
   imports: [
@@ -25,7 +27,7 @@ import { Post } from './posts/entities/post.entity';
       database: process.env.DB_NAME,
       synchronize: true,
       logging: process.env.NODE_ENV === 'dev',
-      entities: [User, Post],
+      entities: [User, Post, Comment],
     }),
     TypeOrmModule.forFeature([User]),
     JwtModule.register({
@@ -36,6 +38,7 @@ import { Post } from './posts/entities/post.entity';
     UsersModule,
     AuthModule,
     PostsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

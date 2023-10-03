@@ -1,4 +1,5 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+import { Comment } from 'src/comments/entities/comment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
@@ -6,13 +7,15 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 @Entity()
 export class Post extends CoreEntity {
   @IsString()
-  @Column()
+  @Column({ length: 50 })
   title: string;
 
   @IsString()
-  @Column()
+  @Column({ length: 3000 })
   content: string;
 
+  @IsString()
+  @IsOptional()
   @Column({ nullable: true })
   imgUrl?: string;
 
@@ -20,13 +23,16 @@ export class Post extends CoreEntity {
     onDelete: 'CASCADE',
     nullable: true,
   })
-  writer: User;
+  writer?: User;
 
-  // @OneToMany(type => Comment, (Comment) => Comment.post)
-  // comments: Comment[]
+  @OneToMany((type) => Comment, (Comment) => Comment.post)
+  comments: Comment[];
 
   @Column({ default: 0 })
   like: number;
+
+  @Column({ default: 0 })
+  view: number;
 
   @Column({ nullable: true })
   nomem: string;

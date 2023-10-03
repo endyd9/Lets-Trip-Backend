@@ -9,6 +9,9 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PostsOutput, PostsInput } from './dto/posts.dto';
 import { PostInput, PostOutput } from './dto/post.dto';
+import { EditPostInput, EditPostOutput } from './dto/edit-post.dto';
+import { CoreOutput } from 'src/common/dto/core.dto';
+import { DeletePostInput, DeletePostOutput } from './dto/delete-post.dto';
 
 @Injectable()
 export class PostsService {
@@ -158,6 +161,7 @@ export class PostsService {
         where: {
           id: +id,
         },
+        relations: ['writer'],
       });
       if (!post) {
         throw new HttpException('글없음', HttpStatus.NOT_FOUND);
@@ -165,6 +169,68 @@ export class PostsService {
       return {
         ok: true,
         post,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async editPost(
+    id: string,
+    { title, content, imgUrl, password }: EditPostInput,
+  ): Promise<EditPostOutput> {
+    try {
+      const post = await this.post.findOne({ where: { id: +id } });
+      if (!post) {
+        throw new HttpException('게시글 못찾음', HttpStatus.NOT_FOUND);
+      }
+      if (post.password) {
+        if (post.password !== password) {
+          throw new HttpException('비밀번호 틀림', HttpStatus.UNAUTHORIZED);
+        }
+      }
+
+      post.title = title;
+      post.content = content;
+      post.imgUrl = imgUrl;
+      await this.post.save(post);
+
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async deletePost(
+    id: string,
+    { password }: DeletePostInput,
+  ): Promise<DeletePostOutput> {
+    try {
+      const post = await this.post.findOne({ where: { id: +id } });
+      if (!post) {
+        throw new HttpException('게시글 없음', HttpStatus.NOT_FOUND);
+      }
+      if (post.password) {
+        console.log(password);
+
+        if (post.password !== password) {
+          throw new HttpException('권한 없음', HttpStatus.UNAUTHORIZED);
+        }
+      }
+
+      await this.post.remove(post);
+      return {
+        ok: true,
       };
     } catch (error) {
       return {

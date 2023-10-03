@@ -4,6 +4,7 @@ import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Post } from 'src/posts/entities/post.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 
 @Entity()
 export class User extends CoreEntity {
@@ -17,7 +18,7 @@ export class User extends CoreEntity {
 
   @IsString()
   @IsOptional()
-  @Column({ default: `아무개` })
+  @Column({ length: 20, default: `아무개` })
   nickName: string;
 
   @IsString()
@@ -27,6 +28,9 @@ export class User extends CoreEntity {
 
   @OneToMany((type) => Post, (Post) => Post.writer)
   posts: Post[];
+
+  @OneToMany((type) => Comment, (Comment) => Comment.writer)
+  comments: Comment[];
 
   @BeforeInsert()
   @BeforeUpdate()

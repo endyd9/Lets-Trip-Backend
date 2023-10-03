@@ -1,5 +1,12 @@
 # Let's Trip BackEnd
 
+## ToDo
+
+1.posts 마무리✅  
+2.comment 엔티티✅  
+3.comment 마무리
+4.board 엔티티 만들고 user, post 엔티티 수정
+
 ## 프로젝트 개요
 
 여행 후기 커뮤니티 프로젝트 백엔드
@@ -17,6 +24,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 
 - GET`/` => Get All Users✅
 - GET`/:uid` => Get User Info✅
+- GET`/me` => Get My Info
 - PATCH`/:uid` => Edit User Info✅
 - DELETE`/:uid` => Delete User✅
 
@@ -26,8 +34,15 @@ NestJS, TypeORM, PostgreSQL, REST API
 - GET`/?limit={Post Limit}&{Sort Options}` => Get Posts✅
 - POST`/` => Create New Post✅
 - GET`/:id` => Get Post✅
-- PATCH`/:id` => Edit Post
-- DELETE`/:id` => Delete Post
+- PATCH`/:id` => Edit Post✅
+- DELETE`/:id` => Delete Post✅
+
+### /comments
+
+- GET`/:postId?page={number}` => Get Current Post Comeents
+- POST`/:postId` => Write Comment
+- PATCH`/:commentId` => Edit Comment
+- DELETE`/:commentId` => Delete Comment
 
 ## 테이블 명세
 
@@ -55,6 +70,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - writer? : User
 - comments : Comment[]
 - like: number
+- view: number
 - nomem? : string
 - password? : string
 
@@ -68,6 +84,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - like: number
 - nomem? : string
 - password? : string
+- reply? : Rrply[]
 
 ### Board
 
