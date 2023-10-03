@@ -2,9 +2,10 @@
 
 ## ToDo
 
-!!!! 유저인증 리팩토링
+!!!! 유저인증 리팩토링  
 1.comment 마무리  
-2.board 엔티티 만들고 user, post 엔티티 수정
+2.reply 만들기  
+3.board 엔티티 만들고 user, post 엔티티 수정
 
 ## 프로젝트 개요
 

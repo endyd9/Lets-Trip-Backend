@@ -7,11 +7,13 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { GetCommentsInput, GetCommentsOutput } from './dto/get-comments.dto';
 import { WriteCommentInput, WriteCommentOutput } from './dto/write-comment.dto';
 import { EditCommentInput, EditCommentOutput } from './dto/edit-comment.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('comments')
 export class CommentsController {
