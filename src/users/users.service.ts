@@ -3,6 +3,7 @@ import { EditUserInput } from './dto/edit-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { ChangePasswordOutput } from './dto/change-password.dto';
 
 @Injectable()
 export class UsersService {
@@ -31,6 +32,31 @@ export class UsersService {
         where: {
           id,
         },
+        select: ['nickName', 'avatarUrl', 'email'],
+      });
+      if (!user) {
+        throw new HttpException('유저없음', HttpStatus.NOT_FOUND);
+      }
+      return {
+        ok: true,
+        user,
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async me(id: number) {
+    try {
+      const user = await this.users.findOne({
+        where: {
+          id,
+        },
       });
       if (!user) {
         throw new HttpException('유저없음', HttpStatus.NOT_FOUND);
@@ -47,13 +73,12 @@ export class UsersService {
     }
   }
 
-  async update(id: number, { password, nickName, avatarUrl }: EditUserInput) {
+  async update(id: number, { nickName, avatarUrl }: EditUserInput) {
     try {
       const user = await this.users.findOne({ where: { id } });
       if (!user) {
         throw new HttpException('유저없음', HttpStatus.NOT_FOUND);
       }
-      user.password = password;
       user.nickName = nickName;
       user.avatarUrl = avatarUrl;
 
@@ -77,6 +102,36 @@ export class UsersService {
         throw new HttpException('유저 없음', HttpStatus.BAD_REQUEST);
       }
       await this.users.remove(user);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async changePassword(
+    id: number,
+    oldPassword: string,
+    newPassword: string,
+  ): Promise<ChangePasswordOutput> {
+    try {
+      const user = await this.users.findOne({ where: { id } });
+      if (!user) {
+        throw new HttpException('유저없음', HttpStatus.NOT_FOUND);
+      }
+      const passwordCheck = await user.checkPassword(oldPassword);
+      console.log(passwordCheck);
+
+      if (!passwordCheck) {
+        throw new HttpException('비번틀림', HttpStatus.FORBIDDEN);
+      }
+      user.password = newPassword;
+
+      await this.users.save(user);
       return {
         ok: true,
       };

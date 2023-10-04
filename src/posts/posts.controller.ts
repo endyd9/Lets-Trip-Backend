@@ -13,6 +13,8 @@ import { PostsOutput, PostsInput } from './dto/posts.dto';
 import { PostInput, PostOutput } from './dto/post.dto';
 import { EditPostInput, EditPostOutput } from './dto/edit-post.dto';
 import { DeletePostInput, DeletePostOutput } from './dto/delete-post.dto';
+import { AuthUser } from 'src/auth/auth-user.decorator';
+import { User } from 'src/users/entities/user.entity';
 
 @Controller('posts')
 export class PostsController {
@@ -24,8 +26,11 @@ export class PostsController {
   }
 
   @Post()
-  uploadPost(@Body() postInput: PostInput): Promise<PostOutput> {
-    return this.postService.uploadPost(postInput);
+  uploadPost(
+    @Body() postInput: PostInput,
+    @AuthUser() user: User | undefined,
+  ): Promise<PostOutput> {
+    return this.postService.uploadPost(postInput, user);
   }
 
   @Get('popular')
@@ -42,15 +47,17 @@ export class PostsController {
   editPost(
     @Param() { id },
     @Body() editPostInput: EditPostInput,
+    @AuthUser() user: User | undefined,
   ): Promise<EditPostOutput> {
-    return this.postService.editPost(id, editPostInput);
+    return this.postService.editPost(id, editPostInput, user);
   }
 
   @Delete(':id')
   deletePost(
     @Param() { id },
     @Body() deletePostInput: DeletePostInput,
+    @AuthUser() user: User | undefined,
   ): Promise<DeletePostOutput> {
-    return this.postService.deletePost(id, deletePostInput);
+    return this.postService.deletePost(id, deletePostInput, user);
   }
 }

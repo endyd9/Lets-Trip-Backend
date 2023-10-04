@@ -12,6 +12,7 @@ import { PostInput, PostOutput } from './dto/post.dto';
 import { EditPostInput, EditPostOutput } from './dto/edit-post.dto';
 import { CoreOutput } from 'src/common/dto/core.dto';
 import { DeletePostInput, DeletePostOutput } from './dto/delete-post.dto';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class PostsService {
@@ -107,28 +108,24 @@ export class PostsService {
     }
   }
 
-  async uploadPost({
-    title,
-    content,
-    imgUrl,
-    writer,
-    nomem,
-    password,
-  }: PostInput): Promise<PostOutput> {
+  async uploadPost(
+    { title, content, imgUrl, nomem, password }: PostInput,
+    user: User,
+  ): Promise<PostOutput> {
     try {
-      if (writer === undefined && nomem === undefined) {
+      if (user === undefined && nomem === undefined) {
         throw new HttpException('작성자 오류', HttpStatus.BAD_REQUEST);
-      } else if (writer !== undefined && nomem !== undefined) {
+      } else if (user !== undefined && nomem !== undefined) {
         throw new HttpException('작성자 오류', HttpStatus.BAD_REQUEST);
       }
       let post: Post;
-      if (writer !== undefined) {
+      if (user !== undefined) {
         post = await this.post.save(
           this.post.create({
             title,
             content,
             imgUrl,
-            writer,
+            writer: user,
           }),
         );
       } else if (nomem !== undefined) {
@@ -181,15 +178,26 @@ export class PostsService {
   async editPost(
     id: string,
     { title, content, imgUrl, password }: EditPostInput,
+    user: User,
   ): Promise<EditPostOutput> {
     try {
-      const post = await this.post.findOne({ where: { id: +id } });
+      const post = await this.post.findOne({
+        where: { id: +id },
+        relations: ['writer'],
+      });
       if (!post) {
         throw new HttpException('게시글 못찾음', HttpStatus.NOT_FOUND);
       }
+
+      if (post.writer !== null) {
+        if (!user || post.writer.id !== user.id) {
+          throw new HttpException('유저정보 다름', HttpStatus.FORBIDDEN);
+        }
+      }
+
       if (post.password) {
-        if (post.password !== password) {
-          throw new HttpException('비밀번호 틀림', HttpStatus.UNAUTHORIZED);
+        if (post.password !== password || password === undefined) {
+          throw new HttpException('비밀번호 틀림', HttpStatus.FORBIDDEN);
         }
       }
 
@@ -214,17 +222,25 @@ export class PostsService {
   async deletePost(
     id: string,
     { password }: DeletePostInput,
+    user: User,
   ): Promise<DeletePostOutput> {
     try {
-      const post = await this.post.findOne({ where: { id: +id } });
+      const post = await this.post.findOne({
+        where: { id: +id },
+        relations: ['writer'],
+      });
+
       if (!post) {
         throw new HttpException('게시글 없음', HttpStatus.NOT_FOUND);
       }
+      if (post.writer !== null) {
+        if (!user || post.writer.id !== user.id) {
+          throw new HttpException('유저정보 다름', HttpStatus.FORBIDDEN);
+        }
+      }
       if (post.password) {
-        console.log(password);
-
         if (post.password !== password) {
-          throw new HttpException('권한 없음', HttpStatus.UNAUTHORIZED);
+          throw new HttpException('비밀번호 틀림', HttpStatus.FORBIDDEN);
         }
       }
 

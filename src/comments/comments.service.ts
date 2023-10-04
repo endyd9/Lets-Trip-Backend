@@ -6,6 +6,12 @@ import { GetCommentsInput, GetCommentsOutput } from './dto/get-comments.dto';
 import { WriteCommentInput, WriteCommentOutput } from './dto/write-comment.dto';
 import { Post } from 'src/posts/entities/post.entity';
 import { EditCommentInput, EditCommentOutput } from './dto/edit-comment.dto';
+import { User } from 'src/users/entities/user.entity';
+import {
+  DeleteCommentInput,
+  DeleteCommentOutput,
+} from './dto/delete-comment.dto';
+import { isNumber } from 'class-validator';
 
 @Injectable()
 export class CommentsService {
@@ -25,6 +31,14 @@ export class CommentsService {
             id: +postId,
           },
         },
+        select: {
+          writer: {
+            id: true,
+            nickName: true,
+            avatarUrl: true,
+          },
+        },
+        relations: ['writer'],
         skip: (+page - 1) * 10,
         take: 10,
       });
@@ -43,7 +57,8 @@ export class CommentsService {
 
   async writeComment(
     postId: string,
-    { writer, nomem, password, content }: WriteCommentInput,
+    { nomem, password, content }: WriteCommentInput,
+    user: User,
   ): Promise<WriteCommentOutput> {
     try {
       const post = await this.post.findOne({ where: { id: +postId } });
@@ -62,10 +77,10 @@ export class CommentsService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      if (writer !== undefined) {
+      if (user !== undefined) {
         await this.comment.save(
           this.comment.create({
-            writer,
+            writer: user,
             content,
             post,
           }),
@@ -98,29 +113,30 @@ export class CommentsService {
 
   async editComment(
     commentId: string,
-    { writer, nomem, password, content }: EditCommentInput,
+    { password, content }: EditCommentInput,
+    user: User,
   ): Promise<EditCommentOutput> {
     try {
-      if (
-        (writer === undefined && nomem === undefined) ||
-        password === undefined
-      ) {
-        throw new HttpException('권한 없음', HttpStatus.UNAUTHORIZED);
+      if (user === undefined && password === undefined) {
+        throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
       }
 
-      const comment = await this.comment.findOne({ where: { id: +commentId } });
+      const comment = await this.comment.findOne({
+        where: { id: +commentId },
+        relations: ['writer'],
+      });
       if (!comment) {
         throw new HttpException('댓글 없음', HttpStatus.NOT_FOUND);
       }
 
-      if (writer !== undefined) {
-        if (comment.writer !== writer) {
-          throw new HttpException('권한 없음', HttpStatus.UNAUTHORIZED);
+      if (comment.writer) {
+        if (comment.writer.id !== user.id) {
+          throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
         }
         comment.content = content;
-      } else if (nomem !== undefined) {
+      } else if (comment.nomem) {
         if (comment.password !== password) {
-          throw new HttpException('권한 없음', HttpStatus.UNAUTHORIZED);
+          throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
         }
         comment.content = content;
       }
@@ -129,6 +145,47 @@ export class CommentsService {
         ok: true,
       };
     } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async deleteComment(
+    commentId: string,
+    { password }: DeleteCommentInput,
+    user: User,
+  ): Promise<DeleteCommentOutput> {
+    try {
+      if (user === undefined && password === undefined) {
+        throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
+      }
+
+      const comment = await this.comment.findOne({
+        where: { id: +commentId },
+        relations: ['writer'],
+      });
+      if (!comment) {
+        throw new HttpException('댓글 없음', HttpStatus.NOT_FOUND);
+      }
+
+      if (comment.writer) {
+        if (comment.writer.id !== user.id) {
+          throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
+        }
+      } else if (comment.nomem) {
+        if (comment.password !== password) {
+          throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
+        }
+      }
+      await this.comment.remove(comment);
+
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      console.log(error);
       return {
         ok: false,
         error,

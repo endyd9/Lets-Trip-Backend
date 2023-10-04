@@ -59,7 +59,7 @@ export class AppService {
       }
       const passwordCheck = await user.checkPassword(password);
       if (!passwordCheck) {
-        throw new HttpException('비번틀림', HttpStatus.NOT_FOUND);
+        throw new HttpException('비번틀림', HttpStatus.UNAUTHORIZED);
       }
 
       const payload = { id: user.id, username: user.email };

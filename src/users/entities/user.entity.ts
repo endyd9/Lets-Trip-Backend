@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { IsOptional, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 import { BeforeInsert, BeforeUpdate, Column, Entity, OneToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { CoreEntity } from 'src/common/entities/core.entity';
@@ -17,19 +17,17 @@ export class User extends CoreEntity {
   password: string;
 
   @IsString()
-  @IsOptional()
   @Column({ length: 20, default: `아무개` })
   nickName: string;
 
   @IsString()
-  @IsOptional()
   @Column({ default: null, nullable: true })
-  avatarUrl: string;
+  avatarUrl?: string;
 
-  @OneToMany((type) => Post, (Post) => Post.writer)
+  @OneToMany((type) => Post, (Post) => Post.writer, { nullable: true })
   posts: Post[];
 
-  @OneToMany((type) => Comment, (Comment) => Comment.writer)
+  @OneToMany((type) => Comment, (Comment) => Comment.writer, { nullable: true })
   comments: Comment[];
 
   @BeforeInsert()

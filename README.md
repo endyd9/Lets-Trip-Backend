@@ -1,15 +1,15 @@
 # Let's Trip BackEnd
 
+8/30
+
 ## ToDo
 
-!!!! 유저인증 리팩토링  
-1.comment 마무리  
-2.reply 만들기  
-3.board 엔티티 만들고 user, post 엔티티 수정
+1.reply 만들기  
+2.board 엔티티 만들고 user, post 엔티티 수정
 
 ## 프로젝트 개요
 
-여행 후기 커뮤니티 프로젝트 백엔드
+여행 후기 커뮤니티 프로젝트 백엔드  
 NestJS, TypeORM, PostgreSQL, REST API
 
 ## API 명세
@@ -20,13 +20,13 @@ NestJS, TypeORM, PostgreSQL, REST API
 - POST`/join` => Create New User✅
 - POST`/login` => User Login✅
 
-### /users
+### /users✅
 
 - GET`/` => Get All Users✅
-- GET`/:uid` => Get User Info✅
-- GET`/me` => Get My Info
-- PATCH`/:uid` => Edit User Info✅
-- DELETE`/:uid` => Delete User✅
+- GET`/:userId` => Get User Info✅
+- PATCH`/:userId` => Edit User Info✅
+- DELETE`/:userId` => Delete User✅
+- PATCH`/:userId/password` => Password Change✅
 
 ### /posts
 
@@ -40,9 +40,9 @@ NestJS, TypeORM, PostgreSQL, REST API
 ### /comments
 
 - GET`/:postId?page={number}` => Get Current Post Comeents✅
-- POST`/:postId` => Write Comment✅
-- PATCH`/:commentId` => Edit Comment
-- DELETE`/:commentId` => Delete Comment
+- POST`/post/:postId` => Write Comment✅
+- PATCH`/:commentId` => Edit Comment✅
+- DELETE`/:commentId` => Delete Comment✅
 
 ## 테이블 명세
 

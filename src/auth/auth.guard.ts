@@ -10,8 +10,8 @@ import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
-    private jwtService: JwtService,
-    private usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {

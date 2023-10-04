@@ -13,10 +13,6 @@ export class PostInput {
   @IsOptional()
   readonly imgUrl: string;
 
-  @IsObject()
-  @IsOptional()
-  readonly writer?: User;
-
   @IsString()
   @IsOptional()
   readonly nomem?: string;

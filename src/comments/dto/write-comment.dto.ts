@@ -3,9 +3,6 @@ import { CoreOutput } from 'src/common/dto/core.dto';
 import { User } from 'src/users/entities/user.entity';
 
 export class WriteCommentInput {
-  @IsOptional()
-  readonly writer?: User;
-
   @IsString()
   @IsOptional()
   readonly nomem?: string;
