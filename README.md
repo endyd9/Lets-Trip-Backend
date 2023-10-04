@@ -39,7 +39,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 
 ### /comments
 
-- GET`/:postId?page={number}` => Get Current Post Comeents✅
+- GET`/post/:postId?page={number}` => Get Current Post Comeents✅
 - POST`/post/:postId` => Write Comment✅
 - PATCH`/:commentId` => Edit Comment✅
 - DELETE`/:commentId` => Delete Comment✅
