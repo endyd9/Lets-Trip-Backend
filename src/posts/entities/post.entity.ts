@@ -1,11 +1,21 @@
 import { IsOptional, IsString } from 'class-validator';
+import { Board } from 'src/boards/entities/border.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, RelationId } from 'typeorm';
 
 @Entity()
 export class Post extends CoreEntity {
+  @ManyToOne((type) => Board, (Board) => Board.posts, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
+  board: Board;
+
+  @RelationId((post: Post) => post.board)
+  boardId: number;
+
   @IsString()
   @Column({ length: 50 })
   title: string;

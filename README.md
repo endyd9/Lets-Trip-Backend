@@ -6,6 +6,7 @@
 
 1.board 엔티티 만들고 user, post 엔티티 수정
 2.like 구현
+
 end. test작성
 
 ## 프로젝트 개요
@@ -28,15 +29,16 @@ NestJS, TypeORM, PostgreSQL, REST API
 - PATCH`/:userId` => Edit User Info✅
 - DELETE`/:userId` => Delete User✅
 - PATCH`/:userId/password` => Password Change✅
+- GET`/posts/:userId` => Get Users Posts
 
 ### /posts
 
 - GET`/popular` => Get Top10 Liked Posts✅
 - GET`/?limit={Post Limit}&{Sort Options}` => Get Posts✅
-- POST`/` => Create New Post✅
-- GET`/:id` => Get Post✅
-- PATCH`/:id` => Edit Post✅
-- DELETE`/:id` => Delete Post✅
+- POST`/:boardId` => Create New Post✅
+- GET`/:postId` => Get Post✅
+- PATCH`/:postId` => Edit Post✅
+- DELETE`/:postId` => Delete Post✅
 
 ### /comments
 
@@ -47,6 +49,16 @@ NestJS, TypeORM, PostgreSQL, REST API
 - POST`/:commentId/` => Write Reply✅
 - PATCH`/reply/:replyId` => Edit Reply✅
 - DELETE`/reply/:replyId` => Delete Reply✅
+
+### /boards
+
+- GET`/` => Get All Approve Boards
+- POST`/` => Board Registration Request
+-
+
+### /like
+
+- GET`/users/:userId/` => Get Users Liked Posts
 
 ## 테이블 명세
 
@@ -62,9 +74,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - posts : Post[]
 - comments : Comment[]
 - reply : Reply[]
-- likedPost : Post[] ❌
-- likedComment : Comment[] ❌
-- managedBoard : Board ❌
+- managedBoard : Board
 
 ### Post
 
@@ -80,7 +90,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - view: number
 - nomem? : string
 - password? : string
-- board : Board ❌
+- board : Board
 
 ### Comment
 
@@ -106,7 +116,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - nomem? : string
 - password? : string
 
-### Board ❌
+### Board
 
 - id: number
 - createdAt : Date
@@ -114,3 +124,17 @@ NestJS, TypeORM, PostgreSQL, REST API
 - name : stirng
 - manager : User
 - posts : Post[]
+
+### likedPost ❌
+
+- id: number
+- createdAt : Date
+- updatedAt : Date
+- user: User
+
+### likedComment ❌
+
+- id: number
+- createdAt : Date
+- updatedAt : Date
+- user: User
