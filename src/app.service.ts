@@ -1,20 +1,63 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { CreateUserInput, CreateUserOutput } from './users/dto/create-user.dto';
 import { LoginInput, LoginOutput } from './users/dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { Post } from './posts/entities/post.entity';
 
 @Injectable()
 export class AppService {
   constructor(
     @InjectRepository(User) private readonly users: Repository<User>,
+    @InjectRepository(Post) private readonly post: Repository<Post>,
     private jwtService: JwtService,
   ) {}
 
-  getHomeData(): string {
-    return '메인화면 데이타 뿌려줄거임';
+  async getHomeData() {
+    try {
+      const mostLiked = await this.post.find({
+        where: {
+          imgUrl: Not(IsNull()),
+        },
+        order: {
+          like: 'DESC',
+        },
+        take: 5,
+        select: ['id', 'imgUrl'],
+      });
+
+      const newest = await this.post.find({
+        order: {
+          createdAt: 'asc',
+        },
+        relations: ['writer'],
+        take: 3,
+        select: {
+          id: true,
+          createdAt: true,
+          title: true,
+          nomem: true,
+          writer: {
+            nickName: true,
+          },
+        },
+      });
+
+      return {
+        ok: true,
+        mostLiked,
+        newest,
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        ok: false,
+        error,
+      };
+    }
   }
 
   async join({

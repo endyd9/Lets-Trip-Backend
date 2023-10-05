@@ -36,7 +36,7 @@ import { Reply } from './comments/entities/reply.entity';
       logging: process.env.NODE_ENV === 'dev',
       entities: [User, Post, Comment, Reply],
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Post]),
     JwtModule.register({
       global: true,
       secret: process.env.TOKEN_SECRET,

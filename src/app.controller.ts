@@ -11,7 +11,7 @@ export class AppController {
     private jwtService: JwtService,
   ) {}
   @Get()
-  home(): string {
+  home() {
     return this.appService.getHomeData();
   }
 

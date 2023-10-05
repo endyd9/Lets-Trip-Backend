@@ -4,8 +4,9 @@
 
 ## ToDo
 
-1.reply 만들기  
-2.board 엔티티 만들고 user, post 엔티티 수정
+1.board 엔티티 만들고 user, post 엔티티 수정
+2.like 구현
+end. test작성
 
 ## 프로젝트 개요
 
@@ -16,7 +17,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 
 ### /
 
-- GET`/` => Get Mainpage Date
+- GET`/` => Get Mainpage Date✅
 - POST`/join` => Create New User✅
 - POST`/login` => User Login✅
 
@@ -44,8 +45,8 @@ NestJS, TypeORM, PostgreSQL, REST API
 - PATCH`/:commentId` => Edit Comment✅
 - DELETE`/:commentId` => Delete Comment✅
 - POST`/:commentId/` => Write Reply✅
-- PATCH`/reply/:replyId` => Edit Reply
-- DELETE`/reply/:replyId` => Delete Reply
+- PATCH`/reply/:replyId` => Edit Reply✅
+- DELETE`/reply/:replyId` => Delete Reply✅
 
 ## 테이블 명세
 
@@ -61,7 +62,9 @@ NestJS, TypeORM, PostgreSQL, REST API
 - posts : Post[]
 - comments : Comment[]
 - reply : Reply[]
-- likedPost : Post[]
+- likedPost : Post[] ❌
+- likedComment : Comment[] ❌
+- managedBoard : Board ❌
 
 ### Post
 
@@ -77,6 +80,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - view: number
 - nomem? : string
 - password? : string
+- board : Board ❌
 
 ### Comment
 
@@ -102,10 +106,11 @@ NestJS, TypeORM, PostgreSQL, REST API
 - nomem? : string
 - password? : string
 
-### Board
+### Board ❌
 
 - id: number
 - createdAt : Date
 - updatedAt : Date
 - name : stirng
 - manager : User
+- posts : Post[]
