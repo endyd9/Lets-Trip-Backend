@@ -18,11 +18,13 @@ import {
   DeleteCommentInput,
   DeleteCommentOutput,
 } from './dto/delete-comment.dto';
+import { WriteReplyInput } from './dto/write-reply.dto';
 
 @Controller('comments')
 export class CommentsController {
   constructor(private commentsService: CommentsService) {}
 
+  //댓글
   @Get('post/:postId')
   getComments(
     @Param() { postId },
@@ -60,5 +62,34 @@ export class CommentsController {
       deleteCommentInput,
       user,
     );
+  }
+
+  // 대댓글
+
+  @Post('/:commentId')
+  writeReply(
+    @Param() { commentId }: { commentId: string },
+    @AuthUser() user: User,
+    @Body() writeReplyinput: WriteReplyInput,
+  ) {
+    return this.commentsService.writeReply(+commentId, writeReplyinput, user);
+  }
+
+  @Patch('/reply/:replyId')
+  editReply(
+    @Param() { replyId }: { replyId: string },
+    @AuthUser() user: User,
+    @Body() editReplyinput: EditCommentInput,
+  ): Promise<EditCommentOutput> {
+    return this.commentsService.editReply(+replyId, editReplyinput, user);
+  }
+
+  @Delete('/reply/:replyId')
+  DeleteReply(
+    @Param() { replyId }: { replyId: string },
+    @AuthUser() user: User,
+    @Body() deleteReplyinput: DeleteCommentInput,
+  ): Promise<DeleteCommentOutput> {
+    return this.commentsService.deleteReply(+replyId, deleteReplyinput, user);
   }
 }

@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
+import { Reply } from 'src/comments/entities/reply.entity';
 
 @Entity()
 export class User extends CoreEntity {
@@ -29,6 +30,9 @@ export class User extends CoreEntity {
 
   @OneToMany((type) => Comment, (Comment) => Comment.writer, { nullable: true })
   comments: Comment[];
+
+  @OneToMany((type) => Reply, (Reply) => Reply.writer, { nullable: true })
+  reply: Reply[];
 
   @BeforeInsert()
   @BeforeUpdate()

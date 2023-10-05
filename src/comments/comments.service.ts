@@ -11,14 +11,18 @@ import {
   DeleteCommentInput,
   DeleteCommentOutput,
 } from './dto/delete-comment.dto';
-import { isNumber } from 'class-validator';
+import { WriteReplyInput, WriteReplyOutput } from './dto/write-reply.dto';
+import { Reply } from './entities/reply.entity';
 
 @Injectable()
 export class CommentsService {
   constructor(
     @InjectRepository(Comment) private readonly comment: Repository<Comment>,
     @InjectRepository(Post) private readonly post: Repository<Comment>,
+    @InjectRepository(Reply) private readonly reply: Repository<Reply>,
   ) {}
+
+  //댓글
 
   async getComments(
     postId: string,
@@ -38,7 +42,10 @@ export class CommentsService {
             avatarUrl: true,
           },
         },
-        relations: ['writer'],
+        order: {
+          createdAt: 'ASC',
+        },
+        relations: ['writer', 'reply'],
         skip: (+page - 1) * 10,
         take: 10,
       });
@@ -61,6 +68,9 @@ export class CommentsService {
     user: User,
   ): Promise<WriteCommentOutput> {
     try {
+      if (!nomem && !user) {
+        throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
+      }
       const post = await this.post.findOne({ where: { id: +postId } });
       if (!post) {
         throw new HttpException('없는 게시글', HttpStatus.BAD_REQUEST);
@@ -186,6 +196,162 @@ export class CommentsService {
       };
     } catch (error) {
       console.log(error);
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  // 대댓글
+
+  async writeReply(
+    commentId: number,
+    { nomem, password, content }: WriteReplyInput,
+    user: User,
+  ): Promise<WriteReplyOutput> {
+    try {
+      if (!nomem && !user) {
+        throw new HttpException('작성자 정보 없음', HttpStatus.BAD_REQUEST);
+      }
+      if (content.length > 200) {
+        throw new HttpException(
+          '댓글 글자수 제한 넘김',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const comment = await this.comment.findOne({ where: { id: commentId } });
+      if (!comment) {
+        throw new HttpException('댓글 정보 없음', HttpStatus.BAD_REQUEST);
+      }
+      if (user) {
+        await this.reply.save(
+          this.reply.create({
+            comment,
+            writer: user,
+            content,
+          }),
+        );
+        return {
+          ok: true,
+        };
+      } else if (nomem) {
+        if (!password) {
+          throw new HttpException('비밀번호 없음', HttpStatus.BAD_REQUEST);
+        }
+        if (nomem.length > 20 || password.length > 20) {
+          throw new HttpException(
+            '닉네임 || 비밀번호 글자수 제한 넘김',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+        await this.reply.save(
+          this.reply.create({
+            comment,
+            nomem,
+            password,
+            content,
+          }),
+        );
+        return {
+          ok: true,
+        };
+      }
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async editReply(
+    replyId: number,
+    { content, password }: EditCommentInput,
+    user: User,
+  ): Promise<EditCommentOutput> {
+    try {
+      if (!user && !password) {
+        throw new HttpException('작성자 정보 없음', HttpStatus.BAD_REQUEST);
+      }
+      if (content.length > 200) {
+        throw new HttpException(
+          '댓글 글자수 제한 넘김',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      const reply = await this.reply.findOne({
+        where: { id: replyId },
+        relations: ['writer'],
+      });
+
+      if (!reply) {
+        throw new HttpException('대댓글 정보 없음', HttpStatus.BAD_REQUEST);
+      }
+
+      if (user) {
+        if (reply.writer.id !== user.id) {
+          throw new HttpException('작성자 정보 불일치', HttpStatus.FORBIDDEN);
+        }
+      }
+
+      if (password) {
+        if (reply.password !== password) {
+          throw new HttpException('비밀번호 불일치', HttpStatus.FORBIDDEN);
+        }
+      }
+
+      reply.content = content;
+
+      await this.reply.save(reply);
+
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async deleteReply(
+    replyId: number,
+    { password }: DeleteCommentInput,
+    user: User,
+  ): Promise<DeleteCommentOutput> {
+    try {
+      if ((!user && !password) || (user && password)) {
+        throw new HttpException('작성자 정보 잘못됨', HttpStatus.BAD_REQUEST);
+      }
+      const reply = await this.reply.findOne({
+        where: { id: replyId },
+        relations: ['writer'],
+      });
+
+      if (!reply) {
+        throw new HttpException('대댓글 정보 없음', HttpStatus.BAD_REQUEST);
+      }
+
+      if (!user) {
+        if (reply.password !== password) {
+          throw new HttpException('비밀번호 불일치', HttpStatus.FORBIDDEN);
+        }
+      }
+
+      if (!password) {
+        if (reply.writer.id !== user.id) {
+          throw new HttpException('작성자 정보 불일치', HttpStatus.FORBIDDEN);
+        }
+      }
+
+      await this.reply.remove(reply);
+
+      return {
+        ok: true,
+      };
+    } catch (error) {
       return {
         ok: false,
         error,

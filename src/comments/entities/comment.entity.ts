@@ -2,7 +2,8 @@ import { IsOptional, IsString } from 'class-validator';
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne, RelationId } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, RelationId } from 'typeorm';
+import { Reply } from './reply.entity';
 
 @Entity()
 export class Comment extends CoreEntity {
@@ -37,4 +38,10 @@ export class Comment extends CoreEntity {
 
   @RelationId((comment: Comment) => comment.post)
   postId: number;
+
+  @OneToMany((type) => Reply, (Reply) => Reply.comment, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  reply: Reply[];
 }

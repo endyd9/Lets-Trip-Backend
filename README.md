@@ -43,6 +43,9 @@ NestJS, TypeORM, PostgreSQL, REST API
 - POST`/post/:postId` => Write Comment✅
 - PATCH`/:commentId` => Edit Comment✅
 - DELETE`/:commentId` => Delete Comment✅
+- POST`/:commentId/` => Write Reply✅
+- PATCH`/reply/:replyId` => Edit Reply
+- DELETE`/reply/:replyId` => Delete Reply
 
 ## 테이블 명세
 
@@ -57,6 +60,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - avatarUrl : string
 - posts : Post[]
 - comments : Comment[]
+- reply : Reply[]
 - likedPost : Post[]
 
 ### Post
@@ -79,12 +83,24 @@ NestJS, TypeORM, PostgreSQL, REST API
 - id: number
 - createdAt : Date
 - updatedAt : Date
+- postId : number
 - content : string
 - writer? : User
 - like: number
 - nomem? : string
 - password? : string
-- reply? : Rrply[]
+- reply? : Reply[]
+
+### Reply
+
+- id: number
+- createdAt : Date
+- updatedAt : Date
+- commentId : number
+- content : string
+- writer? : User
+- nomem? : string
+- password? : string
 
 ### Board
 
