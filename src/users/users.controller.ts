@@ -67,4 +67,14 @@ export class UsersController {
     }
     return this.usersService.changePassword(+id, oldPassword, newPassword);
   }
+
+  @Get('/:userId/posts')
+  getUsersWritePosts(@Param('') { userId }: { userId: string }) {
+    return this.usersService.getUsersWritePosts(+userId);
+  }
+
+  @Get('/:userId/likes')
+  getUsersLikedPosts(@Param('') { userId }: { userId: string }) {
+    return this.usersService.getUsersLikedPosts(+userId);
+  }
 }

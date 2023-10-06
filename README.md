@@ -27,8 +27,8 @@ NestJS, TypeORM, PostgreSQL, REST API
 - PATCH`/:userId` => Edit User Info✅
 - DELETE`/:userId` => Delete User✅
 - PATCH`/:userId/password` => Password Change✅
-- GET`/:userId/posts` => Get Users Posts
-- GET`/:userId/likes` => Get Users Liked Posts
+- GET`/:userId/posts` => Get Users Posts✅
+- GET`/:userId/likes` => Get Users Liked Posts✅
 
 ### /posts ✅
 
@@ -57,7 +57,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - DELETE`/:boardId` => Delete Board ✅
 - POST`/:boardId/confirm` => Board Approve ✅
 
-### /like
+### /like ✅
 
 - GET`/:postId` => isLiked ✅
 - POST`/:postId` => Like || Cancle ✅
