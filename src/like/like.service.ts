@@ -24,6 +24,7 @@ export class LikeService {
           },
         }),
       );
+
       return {
         ok: true,
         isLike,

@@ -63,12 +63,11 @@ export class BoardsService {
   }
 
   async getPosts(boardId: number, query: PostsInput): Promise<PostsOutput> {
-    console.log(query);
-
     try {
       let limit: number;
       let page: number;
       let order: object;
+      let relations: string[];
 
       if (!query.limit) {
         limit = 10;
@@ -96,24 +95,63 @@ export class BoardsService {
               createdAt: 'DESC',
             };
             break;
-          // case 'like':
-          //   order = {
-          //     like: 'DESC',
-          //   };
-          //   break;
-          case 'comment':
+          case 'writer':
             order = {
-              comment: 'DESC',
+              searchName: 'ASC',
             };
+            break;
+          case 'view':
+            order = {
+              view: 'DESC',
+            };
+            break;
+          case 'like':
+            relations = ['like'];
             break;
           default:
             order = {
               createdAt: 'DESC',
             };
         }
+
+        // querybuilder
+        // switch (query.sort.replaceAll('"', '').replaceAll("'", '')) {
+        //   case 'title':
+        //     order = {
+        //       'post.title': 'DESC',
+        //     };
+        //     break;
+        //   case 'createdAt':
+        //     order = {
+        //       'post.createdAt': 'DESC',
+        //     };
+        //     break;
+        //   case 'like':
+        //     order = {
+        //       'COUNT("post"."like")': 'DESC',
+        //     };
+        //     break;
+        //   case 'writer':
+        //     order = {
+        //       'user.nickName': 'DESC',
+        //     };
+        //     break;
+        //   default:
+        //     order = {
+        //       'post.createdAt': 'DESC',
+        //     };
+        // }
+        // .createQueryBuilder('post')
+        // .where(`post.boardId = 1 AND post.nomem != "a"`)
+        // .leftJoinAndSelect('post.writer', 'user')
+        // .select(
+        //   'post.id, user.nickName, post.nomem, post.title, post.createdAt',
+        // )
+        // .orderBy({ ...order })
+        // .getRawMany();
       }
 
-      const posts = await this.post.find({
+      let posts = await this.post.find({
         where: {
           board: {
             id: boardId,
@@ -121,18 +159,35 @@ export class BoardsService {
         },
         select: {
           id: true,
-          writer: {
-            nickName: true,
-          },
-          nomem: true,
+          searchName: true,
           title: true,
           createdAt: true,
+          like: {
+            id: true,
+          },
+          view: true,
         },
-        relations: ['writer'],
+        relations,
         take: limit,
         skip: (page - 1) * limit,
         order,
       });
+
+      posts.forEach((post: any) => {
+        post.nickName = post.searchName;
+        delete post.searchName;
+      });
+
+      if (query.sort === 'like') {
+        posts = posts.sort((a, b) => b.like.length - a.like.length);
+        posts.forEach((post) => {
+          delete post.like;
+        });
+        return {
+          ok: true,
+          posts,
+        };
+      }
 
       return {
         ok: true,
@@ -170,6 +225,7 @@ export class BoardsService {
             content,
             imgUrl,
             writer: user,
+            searchName: user.nickName,
           }),
         );
       } else if (nomem !== undefined) {
@@ -183,6 +239,7 @@ export class BoardsService {
             imgUrl,
             nomem,
             password,
+            searchName: nomem,
           }),
         );
       }

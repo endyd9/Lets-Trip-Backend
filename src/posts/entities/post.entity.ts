@@ -36,11 +36,17 @@ export class Post extends CoreEntity {
   })
   writer?: User;
 
+  @Column({ nullable: true })
+  searchName: string;
+
   @OneToMany((type) => Comment, (Comment) => Comment.post)
   comments: Comment[];
 
   @OneToMany((type) => Like, (like) => like.post)
   like: Like[];
+
+  // @RelationId((post: Post) => post.like)
+  // likeId: number;
 
   @Column({ default: 0 })
   view: number;

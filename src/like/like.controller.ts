@@ -13,6 +13,7 @@ export class LikeController {
   isLiked(@Param() { postId }: { postId: string }, @AuthUser() user: User) {
     return this.likeService.isLike(+postId, user);
   }
+  @UseGuards(AuthGuard)
   @Post('/:postId')
   create(@Param() { postId }: { postId: string }, @AuthUser() user: User) {
     return this.likeService.changeState(+postId, user);

@@ -4,9 +4,8 @@
 
 ## ToDo
 
-1. like 구현
-2. search 구현
-3. 이미지 업로드
+1. search 구현
+2. 이미지 업로드
 
 end. test작성
 
