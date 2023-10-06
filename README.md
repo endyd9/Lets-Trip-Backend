@@ -4,8 +4,8 @@
 
 ## ToDo
 
-1.board 엔티티 만들고 user, post 엔티티 수정
-2.like 구현
+1. API 주소 싹 정리하기
+2. like 구현
 
 end. test작성
 
@@ -29,7 +29,8 @@ NestJS, TypeORM, PostgreSQL, REST API
 - PATCH`/:userId` => Edit User Info✅
 - DELETE`/:userId` => Delete User✅
 - PATCH`/:userId/password` => Password Change✅
-- GET`/posts/:userId` => Get Users Posts
+- GET`/:userId/posts` => Get Users Posts
+- GET`/:userId/likes` => Get Users Liked Posts
 
 ### /posts
 
@@ -52,13 +53,17 @@ NestJS, TypeORM, PostgreSQL, REST API
 
 ### /boards
 
-- GET`/` => Get All Approve Boards
-- POST`/` => Board Registration Request
--
+- GET`/` => Get All Approve Boards ✅
+- POST`/` => Board Registration Request ✅
+- PATCH`/:boardId` => Edit Board ✅
+- DELETE`/:boardId` => Delete Board ✅
+- POST`/:boardId/confirm` => Board Approve ✅
 
 ### /like
 
-- GET`/users/:userId/` => Get Users Liked Posts
+- GET`/post/postId` => isLiked
+- GET`/post/postId` => isLiked
+- POST`/` => Like || Cancle
 
 ## 테이블 명세
 
@@ -75,6 +80,23 @@ NestJS, TypeORM, PostgreSQL, REST API
 - comments : Comment[]
 - reply : Reply[]
 - managedBoard : Board
+
+### Board
+
+- id: number
+- createdAt : Date
+- updatedAt : Date
+- name : stirng
+- manager : User
+- posts : Post[]
+
+### like ❌
+
+- id: number
+- createdAt : Date
+- updatedAt : Date
+- user: User
+- post: Post
 
 ### Post
 
@@ -100,7 +122,6 @@ NestJS, TypeORM, PostgreSQL, REST API
 - postId : number
 - content : string
 - writer? : User
-- like: number
 - nomem? : string
 - password? : string
 - reply? : Reply[]
@@ -115,26 +136,3 @@ NestJS, TypeORM, PostgreSQL, REST API
 - writer? : User
 - nomem? : string
 - password? : string
-
-### Board
-
-- id: number
-- createdAt : Date
-- updatedAt : Date
-- name : stirng
-- manager : User
-- posts : Post[]
-
-### likedPost ❌
-
-- id: number
-- createdAt : Date
-- updatedAt : Date
-- user: User
-
-### likedComment ❌
-
-- id: number
-- createdAt : Date
-- updatedAt : Date
-- user: User

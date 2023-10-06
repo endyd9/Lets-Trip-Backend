@@ -18,8 +18,9 @@ import { CommentsModule } from './comments/comments.module';
 import { Comment } from './comments/entities/comment.entity';
 import { AuthMiddleware } from './auth/auth-user.middleware';
 import { Reply } from './comments/entities/reply.entity';
-import { Board } from './posts/entities/border.entity';
+
 import { BoardsModule } from './boards/boards.module';
+import { Board } from './boards/entities/border.entity';
 
 @Module({
   imports: [

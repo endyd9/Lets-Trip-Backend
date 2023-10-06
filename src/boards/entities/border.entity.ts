@@ -7,7 +7,7 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 @Entity()
 export class Board extends CoreEntity {
   @IsString()
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @ManyToOne((type) => User, (User) => User.managedBoard, {
@@ -23,6 +23,6 @@ export class Board extends CoreEntity {
   posts: Post[];
 
   @IsBoolean()
-  @Column()
+  @Column({ default: false })
   approve: boolean;
 }

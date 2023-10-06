@@ -10,6 +10,7 @@ export class AppController {
     private readonly appService: AppService,
     private jwtService: JwtService,
   ) {}
+
   @Get()
   home() {
     return this.appService.getHomeData();
