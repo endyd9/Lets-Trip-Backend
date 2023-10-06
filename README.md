@@ -19,6 +19,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - GET`/` => Get Mainpage Date✅
 - POST`/join` => Create New User✅
 - POST`/login` => User Login✅
+- GET`/search?type={검색기준}&keyword={검색어}`✅
 
 ### /users✅
 

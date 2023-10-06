@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { AppService } from './app.service';
 import { CreateUserInput, CreateUserOutput } from './users/dto/create-user.dto';
 import { LoginInput, LoginOutput } from './users/dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { SearchInput } from './users/dto/search.dto';
 
 @Controller()
 export class AppController {
@@ -24,8 +25,12 @@ export class AppController {
   }
 
   @Post('login')
-  @HttpCode(200)
   login(@Body() loginInput: LoginInput): Promise<LoginOutput> {
     return this.appService.login(loginInput);
+  }
+
+  @Get('search')
+  search(@Query() query: SearchInput) {
+    return this.appService.searchPosts(query);
   }
 }

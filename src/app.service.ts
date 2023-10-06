@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
-import { IsNull, Not, Repository } from 'typeorm';
+import { IsNull, Like, Not, Repository } from 'typeorm';
 import { CreateUserInput, CreateUserOutput } from './users/dto/create-user.dto';
 import { LoginInput, LoginOutput } from './users/dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { Post } from './posts/entities/post.entity';
+import { SearchInput } from './users/dto/search.dto';
 
 @Injectable()
 export class AppService {
@@ -113,6 +114,86 @@ export class AppService {
       };
     } catch (error) {
       console.log(error);
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async searchPosts({ type, keyword, page: pagePrams }: SearchInput) {
+    let page: number;
+    if (!pagePrams) {
+      page = 1;
+    } else {
+      page = +pagePrams;
+    }
+    try {
+      let posts: Post[];
+      switch (type) {
+        case 'title':
+          posts = await this.post.find({
+            where: {
+              title: Like(`%${keyword}%`),
+            },
+            select: {
+              id: true,
+              nomem: true,
+              writer: {
+                nickName: true,
+              },
+            },
+            relations: ['writer'],
+            skip: (page - 1) * 10,
+          });
+          break;
+        case 'content':
+          posts = await this.post.find({
+            where: {
+              content: Like(`%${keyword}%`),
+            },
+            select: {
+              id: true,
+              nomem: true,
+              writer: {
+                nickName: true,
+              },
+            },
+            relations: ['writer'],
+            skip: (page - 1) * 10,
+          });
+          break;
+        case 'writer':
+          posts = await this.post.find({
+            where: [
+              {
+                writer: {
+                  nickName: Like(`%${keyword}%`),
+                },
+              },
+              {
+                nomem: Like(`%${keyword}%`),
+              },
+            ],
+            select: {
+              id: true,
+              nomem: true,
+              writer: {
+                nickName: true,
+              },
+            },
+            relations: ['writer'],
+            skip: (page - 1) * 10,
+          });
+          break;
+      }
+      return {
+        ok: true,
+        posts,
+      };
+    } catch (error) {
+      console.log(error);
+
       return {
         ok: false,
         error,
