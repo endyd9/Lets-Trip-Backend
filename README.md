@@ -4,8 +4,7 @@
 
 ## ToDo
 
-1. search 구현
-2. 이미지 업로드
+1. 이미지 업로드
 
 ## 프로젝트 개요
 
@@ -19,7 +18,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - GET`/` => Get Mainpage Date✅
 - POST`/join` => Create New User✅
 - POST`/login` => User Login✅
-- GET`/search?type={검색기준}&keyword={검색어}`✅
+- GET`/search?type={검색조건}&keyword={검색어}`✅
 
 ### /users✅
 
