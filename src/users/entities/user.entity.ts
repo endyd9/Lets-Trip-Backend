@@ -7,6 +7,7 @@ import { Post } from 'src/posts/entities/post.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { Reply } from 'src/comments/entities/reply.entity';
 import { Board } from 'src/boards/entities/border.entity';
+import { Like } from 'src/like/entities/like.entity';
 
 @Entity()
 export class User extends CoreEntity {
@@ -35,8 +36,14 @@ export class User extends CoreEntity {
   @OneToMany((type) => Reply, (Reply) => Reply.writer, { nullable: true })
   reply: Reply[];
 
-  @OneToMany((typr) => Board, (board) => board.manager, { nullable: true })
+  @OneToMany((type) => Board, (board) => board.manager, { nullable: true })
   managedBoard: Board[];
+
+  @OneToMany((type) => Like, (like) => like.user, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
+  likedPosts: Like[];
 
   @BeforeInsert()
   @BeforeUpdate()

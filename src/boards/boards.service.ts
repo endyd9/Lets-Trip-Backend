@@ -96,11 +96,11 @@ export class BoardsService {
               createdAt: 'DESC',
             };
             break;
-          case 'like':
-            order = {
-              like: 'DESC',
-            };
-            break;
+          // case 'like':
+          //   order = {
+          //     like: 'DESC',
+          //   };
+          //   break;
           case 'comment':
             order = {
               comment: 'DESC',

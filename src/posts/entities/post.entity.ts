@@ -2,6 +2,7 @@ import { IsOptional, IsString } from 'class-validator';
 import { Board } from 'src/boards/entities/border.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { CoreEntity } from 'src/common/entities/core.entity';
+import { Like } from 'src/like/entities/like.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Column, Entity, ManyToOne, OneToMany, RelationId } from 'typeorm';
 
@@ -38,8 +39,8 @@ export class Post extends CoreEntity {
   @OneToMany((type) => Comment, (Comment) => Comment.post)
   comments: Comment[];
 
-  @Column({ default: 0 })
-  like: number;
+  @OneToMany((type) => Like, (like) => like.post)
+  like: Like[];
 
   @Column({ default: 0 })
   view: number;

@@ -6,6 +6,7 @@
 
 1. like 구현
 2. search 구현
+3. 이미지 업로드
 
 end. test작성
 
@@ -61,9 +62,8 @@ NestJS, TypeORM, PostgreSQL, REST API
 
 ### /like
 
-- GET`/post/postId` => isLiked
-- GET`/post/postId` => isLiked
-- POST`/` => Like || Cancle
+- GET`/:postId` => isLiked ✅
+- POST`/:postId` => Like || Cancle ✅
 
 ## 테이블 명세
 
@@ -77,6 +77,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - nickname : string
 - avatarUrl : string
 - posts : Post[]
+- likedPost : Like[]
 - comments : Comment[]
 - reply : Reply[]
 - managedBoard : Board

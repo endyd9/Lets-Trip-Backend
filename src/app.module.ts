@@ -21,6 +21,8 @@ import { Reply } from './comments/entities/reply.entity';
 
 import { BoardsModule } from './boards/boards.module';
 import { Board } from './boards/entities/border.entity';
+import { LikeModule } from './like/like.module';
+import { Like } from './like/entities/like.entity';
 
 @Module({
   imports: [
@@ -37,7 +39,7 @@ import { Board } from './boards/entities/border.entity';
       database: process.env.DB_NAME,
       synchronize: true,
       logging: process.env.NODE_ENV === 'dev',
-      entities: [User, Post, Comment, Reply, Board],
+      entities: [User, Post, Comment, Reply, Board, Like],
     }),
     TypeOrmModule.forFeature([User, Post]),
     JwtModule.register({
@@ -50,6 +52,7 @@ import { Board } from './boards/entities/border.entity';
     PostsModule,
     CommentsModule,
     BoardsModule,
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

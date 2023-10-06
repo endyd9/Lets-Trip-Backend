@@ -27,9 +27,6 @@ export class Comment extends CoreEntity {
   @Column({ length: 200 })
   content: string;
 
-  @Column({ default: 0 })
-  like: number;
-
   @ManyToOne((type) => Post, (Post) => Post.comments, {
     onDelete: 'CASCADE',
     nullable: false,
