@@ -55,6 +55,8 @@ export class PostsService {
       if (!post) {
         throw new HttpException('글없음', HttpStatus.NOT_FOUND);
       }
+      post.view = post.view + 1;
+      await this.post.save(post);
       return {
         ok: true,
         post,
