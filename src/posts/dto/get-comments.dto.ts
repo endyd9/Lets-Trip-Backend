@@ -1,10 +1,11 @@
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
+import { Comment } from 'src/comments/entities/comment.entity';
 import { CoreOutput } from 'src/common/dto/core.dto';
-import { Comment } from '../entities/comment.entity';
 
 export class GetCommentsInput {
   @IsString()
-  readonly page: string;
+  @IsOptional()
+  readonly page?: string;
 }
 
 export class GetCommentsOutput extends CoreOutput {

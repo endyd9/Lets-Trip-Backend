@@ -9,29 +9,16 @@ import {
   Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { PostsOutput, PostsInput } from './dto/posts.dto';
-import { PostInput, PostOutput } from './dto/post.dto';
 import { EditPostInput, EditPostOutput } from './dto/edit-post.dto';
 import { DeletePostInput, DeletePostOutput } from './dto/delete-post.dto';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { User } from 'src/users/entities/user.entity';
+import { PostsOutput } from 'src/boards/dto/posts.dto';
+import { GetCommentsInput, GetCommentsOutput } from './dto/get-comments.dto';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postService: PostsService) {}
-
-  @Get()
-  posts(@Query() query: PostsInput): Promise<PostsOutput> {
-    return this.postService.getPosts(query);
-  }
-
-  @Post()
-  uploadPost(
-    @Body() postInput: PostInput,
-    @AuthUser() user: User | undefined,
-  ): Promise<PostOutput> {
-    return this.postService.uploadPost(postInput, user);
-  }
 
   @Get('popular')
   popular(): Promise<PostsOutput> {
@@ -59,5 +46,13 @@ export class PostsController {
     @AuthUser() user: User | undefined,
   ): Promise<DeletePostOutput> {
     return this.postService.deletePost(id, deletePostInput, user);
+  }
+
+  @Get(':postId/comments')
+  getComments(
+    @Param() { postId },
+    @Query() getCommentsInput: GetCommentsInput,
+  ): Promise<GetCommentsOutput> {
+    return this.postService.getComments(postId, getCommentsInput);
   }
 }

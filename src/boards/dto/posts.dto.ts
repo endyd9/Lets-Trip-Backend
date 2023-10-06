@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 import { CoreOutput } from 'src/common/dto/core.dto';
-import { Post } from '../entities/post.entity';
+import { Post } from 'src/posts/entities/post.entity';
 
 export class PostsInput {
   @IsString()
@@ -9,7 +9,7 @@ export class PostsInput {
 
   @IsString()
   @IsOptional()
-  readonly sortOption?: string;
+  readonly sort?: string;
 
   @IsString()
   @IsOptional()

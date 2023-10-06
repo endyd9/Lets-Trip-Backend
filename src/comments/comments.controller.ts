@@ -9,7 +9,6 @@ import {
   Query,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
-import { GetCommentsInput, GetCommentsOutput } from './dto/get-comments.dto';
 import { WriteCommentInput, WriteCommentOutput } from './dto/write-comment.dto';
 import { EditCommentInput, EditCommentOutput } from './dto/edit-comment.dto';
 import { AuthUser } from 'src/auth/auth-user.decorator';
@@ -25,15 +24,8 @@ export class CommentsController {
   constructor(private commentsService: CommentsService) {}
 
   //댓글
-  @Get('post/:postId')
-  getComments(
-    @Param() { postId },
-    @Query() getCommentsInput: GetCommentsInput,
-  ): Promise<GetCommentsOutput> {
-    return this.commentsService.getComments(postId, getCommentsInput);
-  }
 
-  @Post('post/:postId')
+  @Post(':postId')
   writeCommet(
     @Param() { postId },
     @Body() writeCommentInput: WriteCommentInput,
@@ -66,7 +58,7 @@ export class CommentsController {
 
   // 대댓글
 
-  @Post('/:commentId')
+  @Post('reply/:commentId')
   writeReply(
     @Param() { commentId }: { commentId: string },
     @AuthUser() user: User,

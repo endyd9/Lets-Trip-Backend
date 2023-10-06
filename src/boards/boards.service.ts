@@ -5,11 +5,15 @@ import { Board } from './entities/border.entity';
 import { User } from 'src/users/entities/user.entity';
 import { CreateBoardInput, CreateBoardOutput } from './dto/create-board.dto';
 import { EditBoardInput, EditBoardOutput } from './dto/edit-board.dto';
+import { PostInput, PostOutput } from './dto/post.dto';
+import { Post } from 'src/posts/entities/post.entity';
+import { PostsInput, PostsOutput } from './dto/posts.dto';
 
 @Injectable()
 export class BoardsService {
   constructor(
     @InjectRepository(Board) private readonly board: Repository<Board>,
+    @InjectRepository(Post) private readonly post: Repository<Post>,
   ) {}
 
   async getAll() {
@@ -31,6 +35,7 @@ export class BoardsService {
       };
     }
   }
+
   async create(
     { name }: CreateBoardInput,
     user: User,
@@ -50,6 +55,145 @@ export class BoardsService {
         ok: true,
       };
     } catch (error) {
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async getPosts(boardId: number, query: PostsInput): Promise<PostsOutput> {
+    console.log(query);
+
+    try {
+      let limit: number;
+      let page: number;
+      let order: object;
+
+      if (!query.limit) {
+        limit = 10;
+      } else {
+        limit = +query.limit;
+      }
+      if (!query.page) {
+        page = 1;
+      } else {
+        page = +query.page;
+      }
+      if (!query.sort) {
+        order = {
+          createdAt: 'DESC',
+        };
+      } else {
+        switch (query.sort.replaceAll('"', '').replaceAll("'", '')) {
+          case 'title':
+            order = {
+              title: 'DESC',
+            };
+            break;
+          case 'createdAt':
+            order = {
+              createdAt: 'DESC',
+            };
+            break;
+          case 'like':
+            order = {
+              like: 'DESC',
+            };
+            break;
+          case 'comment':
+            order = {
+              comment: 'DESC',
+            };
+            break;
+          default:
+            order = {
+              createdAt: 'DESC',
+            };
+        }
+      }
+
+      const posts = await this.post.find({
+        where: {
+          board: {
+            id: boardId,
+          },
+        },
+        select: {
+          id: true,
+          writer: {
+            nickName: true,
+          },
+          nomem: true,
+          title: true,
+          createdAt: true,
+        },
+        relations: ['writer'],
+        take: limit,
+        skip: (page - 1) * limit,
+        order,
+      });
+
+      return {
+        ok: true,
+        posts,
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async uploadPost(
+    boardId: number,
+    { title, content, imgUrl, nomem, password }: PostInput,
+    user: User,
+  ): Promise<PostOutput> {
+    try {
+      if (user === undefined && nomem === undefined) {
+        throw new HttpException('작성자 오류', HttpStatus.BAD_REQUEST);
+      } else if (user !== undefined && nomem !== undefined) {
+        throw new HttpException('작성자 오류', HttpStatus.BAD_REQUEST);
+      }
+      let post: Post;
+      if (user !== undefined) {
+        post = await this.post.save(
+          this.post.create({
+            board: {
+              id: boardId,
+            },
+            title,
+            content,
+            imgUrl,
+            writer: user,
+          }),
+        );
+      } else if (nomem !== undefined) {
+        post = await this.post.save(
+          this.post.create({
+            board: {
+              id: boardId,
+            },
+            title,
+            content,
+            imgUrl,
+            nomem,
+            password,
+          }),
+        );
+      }
+
+      return {
+        ok: true,
+        postId: post.id,
+      };
+    } catch (error) {
+      console.log(error);
+
       return {
         ok: false,
         error,

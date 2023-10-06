@@ -4,8 +4,8 @@
 
 ## ToDo
 
-1. API 주소 싹 정리하기
-2. like 구현
+1. like 구현
+2. search 구현
 
 end. test작성
 
@@ -16,7 +16,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 
 ## API 명세
 
-### /
+### /✅
 
 - GET`/` => Get Mainpage Date✅
 - POST`/join` => Create New User✅
@@ -32,29 +32,29 @@ NestJS, TypeORM, PostgreSQL, REST API
 - GET`/:userId/posts` => Get Users Posts
 - GET`/:userId/likes` => Get Users Liked Posts
 
-### /posts
+### /posts ✅
 
 - GET`/popular` => Get Top10 Liked Posts✅
-- GET`/?limit={Post Limit}&{Sort Options}` => Get Posts✅
-- POST`/:boardId` => Create New Post✅
 - GET`/:postId` => Get Post✅
 - PATCH`/:postId` => Edit Post✅
 - DELETE`/:postId` => Delete Post✅
+- GET`/:postId/comments?page={number}` => Get Current Post Comments✅
 
-### /comments
+### /comments ✅
 
-- GET`/post/:postId?page={number}` => Get Current Post Comeents✅
-- POST`/post/:postId` => Write Comment✅
+- POST`/:postId` => Write Comment✅
 - PATCH`/:commentId` => Edit Comment✅
 - DELETE`/:commentId` => Delete Comment✅
-- POST`/:commentId/` => Write Reply✅
+- POST`/reply/:commentId` => Write Reply✅
 - PATCH`/reply/:replyId` => Edit Reply✅
 - DELETE`/reply/:replyId` => Delete Reply✅
 
-### /boards
+### /boards ✅
 
 - GET`/` => Get All Approve Boards ✅
 - POST`/` => Board Registration Request ✅
+- GET`/:boardId?limit={Post Limit}&{Sort Options}` => Get Posts ✅
+- POST`/:boardId` => Create New Post
 - PATCH`/:boardId` => Edit Board ✅
 - DELETE`/:boardId` => Delete Board ✅
 - POST`/:boardId/confirm` => Board Approve ✅
@@ -90,7 +90,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 - manager : User
 - posts : Post[]
 
-### like ❌
+### like
 
 - id: number
 - createdAt : Date
