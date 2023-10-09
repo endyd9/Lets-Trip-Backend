@@ -40,21 +40,24 @@ export class BoardsService {
     { name }: CreateBoardInput,
     user: User,
   ): Promise<CreateBoardOutput> {
-    const exist = await this.board.findOne({ where: { name } });
-    if (exist) {
-      throw new HttpException('게시판명 중복', HttpStatus.BAD_REQUEST);
-    }
-    await this.board.save(
-      this.board.create({
-        name,
-        manager: user,
-      }),
-    );
     try {
+      const exist = await this.board.findOne({ where: { name } });
+      if (exist) {
+        throw new HttpException('게시판명 중복', HttpStatus.BAD_REQUEST);
+      }
+      await this.board.save(
+        this.board.create({
+          name,
+          manager: user,
+        }),
+      );
+
       return {
         ok: true,
       };
     } catch (error) {
+      console.log(error);
+
       return {
         ok: false,
         error,
@@ -67,7 +70,7 @@ export class BoardsService {
       let limit: number;
       let page: number;
       let order: object;
-      let relations: string[];
+      let posts;
 
       if (!query.limit) {
         limit = 10;
@@ -105,89 +108,45 @@ export class BoardsService {
               view: 'DESC',
             };
             break;
-          case 'like':
-            relations = ['like'];
-            break;
           default:
             order = {
               createdAt: 'DESC',
             };
         }
-
-        // querybuilder
-        // switch (query.sort.replaceAll('"', '').replaceAll("'", '')) {
-        //   case 'title':
-        //     order = {
-        //       'post.title': 'DESC',
-        //     };
-        //     break;
-        //   case 'createdAt':
-        //     order = {
-        //       'post.createdAt': 'DESC',
-        //     };
-        //     break;
-        //   case 'like':
-        //     order = {
-        //       'COUNT("post"."like")': 'DESC',
-        //     };
-        //     break;
-        //   case 'writer':
-        //     order = {
-        //       'user.nickName': 'DESC',
-        //     };
-        //     break;
-        //   default:
-        //     order = {
-        //       'post.createdAt': 'DESC',
-        //     };
-        // }
-        // .createQueryBuilder('post')
-        // .where(`post.boardId = 1 AND post.nomem != "a"`)
-        // .leftJoinAndSelect('post.writer', 'user')
-        // .select(
-        //   'post.id, user.nickName, post.nomem, post.title, post.createdAt',
-        // )
-        // .orderBy({ ...order })
-        // .getRawMany();
       }
 
-      let posts = await this.post.find({
-        where: {
-          board: {
-            id: boardId,
+      if (query.sort === 'like') {
+        posts = await this.post.query(
+          `SELECT "post"."id", "post"."title",  "post"."searchName",  "post"."createdAt", "post"."view",
+           (SELECT COUNT("like"."id") AS "likes" FROM "like" "like" WHERE "like"."postId" = "post"."id") AS "likes"
+            FROM "post" "post" where post."boardId" = ${boardId} order by likes DESC limit ${limit} offset ${
+            (page - 1) * limit
+          }`,
+        );
+      } else {
+        posts = await this.post.find({
+          where: {
+            board: {
+              id: boardId,
+            },
           },
-        },
-        select: {
-          id: true,
-          searchName: true,
-          title: true,
-          createdAt: true,
-          like: {
+          select: {
             id: true,
+            searchName: true,
+            title: true,
+            createdAt: true,
+            view: true,
           },
-          view: true,
-        },
-        relations,
-        take: limit,
-        skip: (page - 1) * limit,
-        order,
-      });
+          take: limit,
+          skip: (page - 1) * limit,
+          order,
+        });
+      }
 
       posts.forEach((post: any) => {
         post.nickName = post.searchName;
         delete post.searchName;
       });
-
-      if (query.sort === 'like') {
-        posts = posts.sort((a, b) => b.like.length - a.like.length);
-        posts.forEach((post) => {
-          delete post.like;
-        });
-        return {
-          ok: true,
-          posts,
-        };
-      }
 
       return {
         ok: true,
@@ -195,7 +154,6 @@ export class BoardsService {
       };
     } catch (error) {
       console.log(error);
-
       return {
         ok: false,
         error,

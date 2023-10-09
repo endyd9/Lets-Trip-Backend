@@ -1,7 +1,7 @@
 import { CoreEntity } from 'src/common/entities/core.entity';
 import { Post } from 'src/posts/entities/post.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Entity, ManyToOne, OneToMany, RelationId } from 'typeorm';
+import { Entity, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Like extends CoreEntity {

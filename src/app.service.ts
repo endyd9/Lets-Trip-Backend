@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
-import { IsNull, Like, Not, Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { CreateUserInput, CreateUserOutput } from './users/dto/create-user.dto';
 import { LoginInput, LoginOutput } from './users/dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
@@ -18,16 +18,11 @@ export class AppService {
 
   async getHomeData() {
     try {
-      const mostLiked = await this.post.find({
-        where: {
-          imgUrl: Not(IsNull()),
-        },
-        order: {
-          like: 'DESC',
-        },
-        take: 5,
-        select: ['id', 'imgUrl'],
-      });
+      const mostLiked = await this.post
+        .query(`SELECT "post"."id", "post"."imgUrl",
+        (SELECT COUNT("like"."id") FROM "like" "like" WHERE "like"."postId" = "post"."id") AS "likes"
+        FROM "post"
+        where "post"."imgUrl" is Not Null order by likes DESC limit 3`);
 
       const newest = await this.post.find({
         order: {
