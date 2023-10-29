@@ -171,6 +171,7 @@ export class CommentsService {
     { nomem, password, content }: WriteReplyInput,
     user: User,
   ): Promise<WriteReplyOutput> {
+    let reply: Reply;
     try {
       if (!nomem && !user) {
         throw new HttpException('작성자 정보 없음', HttpStatus.BAD_REQUEST);
@@ -186,16 +187,11 @@ export class CommentsService {
         throw new HttpException('댓글 정보 없음', HttpStatus.BAD_REQUEST);
       }
       if (user) {
-        await this.reply.save(
-          this.reply.create({
-            comment,
-            writer: user,
-            content,
-          }),
-        );
-        return {
-          ok: true,
-        };
+        reply = this.reply.create({
+          comment,
+          writer: user,
+          content,
+        });
       } else if (nomem) {
         if (!password) {
           throw new HttpException('비밀번호 없음', HttpStatus.BAD_REQUEST);
@@ -206,18 +202,19 @@ export class CommentsService {
             HttpStatus.BAD_REQUEST,
           );
         }
-        await this.reply.save(
-          this.reply.create({
-            comment,
-            nomem,
-            password,
-            content,
-          }),
-        );
-        return {
-          ok: true,
-        };
+        reply = this.reply.create({
+          comment,
+          nomem,
+          password,
+          content,
+        });
       }
+      await this.reply.save(reply);
+
+      return {
+        ok: true,
+        reply,
+      };
     } catch (error) {
       return {
         ok: false,
