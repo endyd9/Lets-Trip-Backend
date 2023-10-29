@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 import { CoreOutput } from 'src/common/dto/core.dto';
-import { User } from 'src/users/entities/user.entity';
+import { Comment } from '../entities/comment.entity';
 
 export class WriteCommentInput {
   @IsString()
@@ -15,4 +15,6 @@ export class WriteCommentInput {
   readonly content: string;
 }
 
-export class WriteCommentOutput extends CoreOutput {}
+export class WriteCommentOutput extends CoreOutput {
+  newComment?: Comment;
+}

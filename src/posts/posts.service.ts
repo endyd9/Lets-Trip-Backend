@@ -168,16 +168,20 @@ export class PostsService {
         select: {
           id: true,
           createdAt: true,
+          content: true,
           nomem: true,
+          password: true,
           reply: {
             id: true,
             content: true,
             writer: {
+              createdAt: true,
               id: true,
               nickName: true,
               avatarUrl: true,
             },
             nomem: true,
+            password: true,
           },
           writer: {
             id: true,
@@ -186,9 +190,9 @@ export class PostsService {
           },
         },
         order: {
-          createdAt: 'ASC',
+          createdAt: 'DESC',
         },
-        relations: ['writer', 'reply'],
+        relations: ['writer', 'reply', 'reply.writer'],
         skip: (+page - 1) * 10,
         take: 10,
       });

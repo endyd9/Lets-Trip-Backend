@@ -93,11 +93,17 @@ export class BoardsService {
               title: 'DESC',
             };
             break;
-          case 'createdAt':
+          case 'createdAtDESC':
             order = {
               createdAt: 'DESC',
             };
             break;
+          case 'createdAtASC':
+            order = {
+              createdAt: 'ASC',
+            };
+            break;
+
           case 'writer':
             order = {
               searchName: 'ASC',

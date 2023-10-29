@@ -26,19 +26,20 @@ export class AppService {
 
       const newest = await this.post.find({
         order: {
-          createdAt: 'asc',
+          createdAt: 'desc',
         },
-        relations: ['writer'],
         take: 3,
         select: {
           id: true,
           createdAt: true,
           title: true,
-          nomem: true,
-          writer: {
-            nickName: true,
-          },
+          searchName: true,
         },
+      });
+
+      newest.forEach((post: any) => {
+        post.nickName = post.searchName;
+        delete post.searchName;
       });
 
       return {
@@ -62,6 +63,8 @@ export class AppService {
     nickName,
     avatarUrl,
   }: CreateUserInput): Promise<CreateUserOutput> {
+    console.log(nickName, avatarUrl);
+
     try {
       const exists = Boolean(
         await this.users.findOne({
@@ -69,7 +72,7 @@ export class AppService {
         }),
       );
       if (exists) {
-        throw new HttpException('이메일 중복', HttpStatus.BAD_REQUEST);
+        throw new HttpException('중복된 이메일입니다.', HttpStatus.BAD_REQUEST);
       }
       await this.users.save(
         this.users.create({
@@ -106,6 +109,7 @@ export class AppService {
       return {
         ok: true,
         token,
+        userId: user.id,
       };
     } catch (error) {
       console.log(error);

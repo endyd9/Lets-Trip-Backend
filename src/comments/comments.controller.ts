@@ -1,13 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Param, Patch, Post } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { WriteCommentInput, WriteCommentOutput } from './dto/write-comment.dto';
 import { EditCommentInput, EditCommentOutput } from './dto/edit-comment.dto';

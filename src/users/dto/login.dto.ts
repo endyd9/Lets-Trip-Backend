@@ -10,4 +10,5 @@ export class LoginInput {
 
 export class LoginOutput extends CoreOutput {
   readonly token?: string;
+  readonly userId?: number;
 }

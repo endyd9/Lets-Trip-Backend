@@ -16,6 +16,7 @@ export class CreateUserInput extends PickType(User, [
   readonly password: string;
 
   @IsString()
+  @IsOptional()
   readonly nickName: string;
 
   @IsString()

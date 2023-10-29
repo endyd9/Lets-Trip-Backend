@@ -51,7 +51,7 @@ NestJS, TypeORM, PostgreSQL, REST API
 
 - GET`/` => Get All Approve Boards ✅
 - POST`/` => Board Registration Request ✅
-- GET`/:boardId?limit={Post Limit}&{Sort Options}` => Get Posts ✅
+- GET`/:boardId?limit={Post Limit}&sort={Sort Options}&page={page number}` => Get Posts ✅
 - POST`/:boardId` => Create New Post
 - PATCH`/:boardId` => Edit Board ✅
 - DELETE`/:boardId` => Delete Board ✅

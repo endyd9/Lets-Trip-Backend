@@ -28,6 +28,7 @@ export class CommentsService {
     { nomem, password, content }: WriteCommentInput,
     user: User,
   ): Promise<WriteCommentOutput> {
+    let newComment: Comment;
     try {
       if (!nomem && !user) {
         throw new HttpException('권한 없음', HttpStatus.FORBIDDEN);
@@ -49,31 +50,28 @@ export class CommentsService {
         );
       }
       if (user !== undefined) {
-        await this.comment.save(
-          this.comment.create({
-            writer: user,
-            content,
-            post,
-          }),
-        );
-        return {
-          ok: true,
-        };
+        newComment = this.comment.create({
+          writer: user,
+          content,
+          post,
+        });
       } else if (nomem !== undefined && password !== undefined) {
-        await this.comment.save(
-          this.comment.create({
-            nomem,
-            password,
-            content,
-            post,
-          }),
-        );
-        return {
-          ok: true,
-        };
+        newComment = this.comment.create({
+          nomem,
+          password,
+          content,
+          post,
+        });
       } else {
         throw new HttpException('작성자 오류', HttpStatus.BAD_REQUEST);
       }
+
+      await this.comment.save(newComment);
+
+      return {
+        ok: true,
+        newComment,
+      };
     } catch (error) {
       console.log(error);
 
